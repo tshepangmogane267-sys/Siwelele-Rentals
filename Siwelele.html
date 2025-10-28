@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Siwelele Car Rental Management System</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#06b6d4; --muted:#94a3b8; --glass: rgba(255,255,255,0.04);
+      --success:#16a34a; --danger:#ef4444;
+      --max-w:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; 
+      background:linear-gradient(180deg,#071027 0%, #071728 60%); 
+      color:#e6eef6; 
+      -webkit-font-smoothing:antialiased; 
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .container{max-width:var(--max-w); margin:36px auto; padding:20px}
+    
+    /* Header with logo background */
+    .header-container {
+      position: relative;
+      background: linear-gradient(180deg, rgba(11, 18, 32, 0.9) 0%, rgba(11, 18, 32, 0.7) 100%);
+      padding: 20px 0;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+    }
+    
+    header{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      margin-bottom:0;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .logo-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0.15;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .logo-image {
+      height: 120px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    
+    .logo-text {
+      background: var(--glass);
+      padding: 12px 18px;
+      border-radius: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 2;
+    }
+    
+    .logo-text h1{
+      margin:0;
+      font-size:22px;
+      font-weight: 700;
+    }
+    
+    nav{
+      margin-left:auto;
+      display:flex;
+      gap:10px;
+      z-index: 2;
+    }
+    
+    button.btn{
+      background:var(--accent);
+      border:none;
+      color:#042023;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+      transition: all 0.3s ease;
+    }
+    
+    button.btn:hover {
+      background: #0891b2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+    
+    button.ghost{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.1);
+      color:var(--muted);
+      padding:10px 14px;
+      border-radius:8px;
+      transition: all 0.3s ease;
+    }
+    
+    button.ghost:hover {
+      border-color: rgba(6, 182, 212, 0.5);
+      color: #e6eef6;
+    }
+    
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); 
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Sidebar */
+    .sidebar h3{
+      margin:0 0 12px 0;
+      font-size: 18px;
+      color: #e6eef6;
+    }
+    
+    .stat{
+      display:flex;
+      justify-content:space-between;
+      padding:12px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.02);
+      margin-bottom:10px;
+      transition: all 0.3s ease;
+    }
+    
+    .stat:hover {
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-2px);
+    }
+    
+    .muted{color:var(--muted);font-size:13px}
+    .search{display:flex;gap:8px;margin-bottom:12px}
+    input[type=text], select{
+      width:100%;
+      padding:10px;
+      border-radius:8px;
+      border:none;
+      background:rgba(255,255,255,0.02);
+      color:inherit;
+      transition: all 0.3s ease;
+    }
+    
+    input[type=text]:focus, select:focus {
+      outline: 1px solid var(--accent);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* main content */
+    .toolbar{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      margin-bottom:16px;
+    }
+    
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+    
+    th,td{
+      padding:12px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      font-size:14px;
+    }
+    
+    th{
+      color:var(--muted);
+      font-size:13px;
+      font-weight: 600;
+    }
+    
+    .car-image{
+      width:78px;
+      height:48px;
+      border-radius:6px;
+      background-size:cover;
+      background-position:center;
+    }
+    
+    .chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.03);
+      font-size:12px;
+      font-weight: 500;
+    }
+
+    /* modal */
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,0.8);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 100;
+    }
+    
+    .modal{
+      width:760px;
+      max-width:94%;
+      background:linear-gradient(180deg,#071026,#061428);
+      padding:24px;
+      border-radius:12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 20px 40px rgba(2,6,23,0.8);
+    }
+    
+    .form-row{display:flex;gap:8px}
+    .form-row > *{flex:1}
+    label{
+      display:block;
+      font-size:13px;
+      margin-bottom:6px;
+      color:var(--muted);
+      font-weight: 500;
+    }
+    
+    input,select,textarea{
+      padding:10px;
+      border-radius:8px;
+      border:none;
+      background:rgba(255,255,255,0.02);
+      color:inherit;
+      margin-bottom: 12px;
+    }
+    
+    .actions{
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      margin-top:18px;
+    }
+
+    /* responsive */
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr}
+      header{flex-wrap:wrap}
+      .logo-image {
+        height: 80px;
+      }
+    }
+
+    /* small touches */
+    .small{font-size:13px;color:var(--muted)}
+    .table-actions button{margin-right:6px}
+    .empty{padding:28px;text-align:center;color:var(--muted)}
+    
+    .status-available {
+      color: var(--success);
+    }
+    
+    .status-rented {
+      color: var(--danger);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <div class="logo-background">
+      <div style="font-size: 120px; font-weight: 900; color: rgba(255,255,255,0.05);">
+         <img src="Siwelele Rentals.png" alt="Siwelele Rentals" width="250" height="250" style="border-radius:8px; background:#fff;" />
+      </div>
+    </div>
+    
+    <div class="container">
+      <header>
+        <div class="logo-text">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="6" fill="#052029"/>
+            <path d="M4 12c2-3 6-6 10-6s8 3 10 6" stroke="#06b6d4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <h1>Siwelele Car Rental</h1>
+            <div class="small">Management System</div>
+          </div>
+        </div>
+        <nav>
+          <button class="btn" id="newBookingBtn">New Booking</button>
+          <button class="ghost" id="addCarBtn">Add Car</button>
+        </nav>
+      </header>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <aside class="card sidebar">
+        <h3>Overview</h3>
+        <div class="stat">
+          <div>
+            <strong id="statCars">0</strong>
+            <div class="small muted">Total cars</div>
+          </div>
+          <div class="muted">🚗</div>
+        </div>
+        <div class="stat">
+          <div>
+            <strong id="statBookings">0</strong>
+            <div class="small muted">Active bookings</div>
+          </div>
+          <div class="muted">📅</div>
+        </div>
+        <div class="stat">
+          <div>
+            <strong id="statRevenue">R0</strong>
+            <div class="small muted">Estimated revenue</div>
+          </div>
+          <div class="muted">💰</div>
+        </div>
+
+        <hr style="border:none;height:8px;background:transparent" />
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="Search model / registration" />
+        </div>
+        <label class="small muted">Filter by:</label>
+        <select id="filterStatus">
+          <option value="all">All status</option>
+          <option value="available">Available</option>
+          <option value="rented">Rented</option>
+        </select>
+        <label class="small muted" style="margin-top:10px">Sort by:</label>
+        <select id="sortBy">
+          <option value="model">Model (A-Z)</option>
+          <option value="price">Price (low→high)</option>
+        </select>
+      </aside>
+
+      <main>
+        <div class="card">
+          <div class="toolbar">
+            <div class="small muted">Showing <span id="displayCount">0</span> cars</div>
+            <div style="margin-left:auto" class="small muted">Tip: Click "Manage" to edit or delete</div>
+          </div>
+
+          <div id="carsTableWrap">
+            <table id="carsTable" aria-label="cars table">
+              <thead>
+                <tr>
+                  <th>Car</th>
+                  <th>Model</th>
+                  <th>Rate / day</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="carsTbody">
+                <!-- rows injected -->
+              </tbody>
+            </table>
+            <div id="emptyMessage" class="empty" style="display:none">No cars found. Add a car to get started.</div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="card">
+          <h3 style="margin-top:0">Bookings</h3>
+          <div id="bookingsWrap">
+            <table id="bookingsTable">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Car</th>
+                  <th>Customer</th>
+                  <th>From→To</th>
+                  <th>Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTbody"></tbody>
+            </table>
+            <div id="emptyBookings" class="empty" style="display:none">No bookings yet.</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modals (hidden until needed) -->
+  <div id="modalRoot"></div>
+
+  <script>
+    /* Simple client-side car rental management app using LocalStorage
+       - Cars: CRUD (id, model, reg, pricePerDay, img, status)
+       - Bookings: create, view, cancel
+       - Basic dashboard & filtering
+    */
+
+    // --- Utilities ---
+    const $ = sel => document.querySelector(sel);
+    const createEl = (tag, attrs={}, children=[])=>{ 
+      const e = document.createElement(tag); 
+      Object.entries(attrs).forEach(([k,v])=>{ 
+        if(k==='class') e.className=v; 
+        else if(k.startsWith('on')) e.addEventListener(k.slice(2), v); 
+        else e.setAttribute(k,v); 
+      }); 
+      children.forEach(c=>e.appendChild(typeof c==='string'?document.createTextNode(c):c)); 
+      return e
+    }
+    const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7)
+
+    // --- persistence keys ---
+    const KEY_CARS = 'siwelele_cars_v1';
+    const KEY_BOOKINGS = 'siwelele_bookings_v1';
+
+    // --- sample data ---
+    const SAMPLE_CARS = [
+      {id:uid(),model:'Toyota Corolla 1.6', reg:'KRG123GP', price:450, img:'https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=800&q=60', status:'available'},
+      {id:uid(),model:'VW Polo Vivo', reg:'JHJ890NW', price:380, img:'https://images.unsplash.com/photo-1542367597-281f20a3cc5e?auto=format&fit=crop&w=800&q=60', status:'available'},
+      {id:uid(),model:'Mercedes-Benz C200', reg:'VWX555EC', price:1200, img:'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=800&q=60', status:'available'}
+    ];
+
+    // --- state ---
+    let cars = [];
+    let bookings = [];
+
+    // --- init ---
+    function loadData(){
+      const rawCars = localStorage.getItem(KEY_CARS);
+      const rawBookings = localStorage.getItem(KEY_BOOKINGS);
+      cars = rawCars ? JSON.parse(rawCars) : SAMPLE_CARS.slice();
+      bookings = rawBookings ? JSON.parse(rawBookings) : [];
+      saveData();
+    }
+    
+    function saveData(){ 
+      localStorage.setItem(KEY_CARS, JSON.stringify(cars)); 
+      localStorage.setItem(KEY_BOOKINGS, JSON.stringify(bookings)); 
+    }
+
+    // --- render ---
+    function render(){
+      // stats
+      $('#statCars').textContent = cars.length;
+      $('#statBookings').textContent = bookings.length;
+      const revenue = bookings.reduce((s,b)=>s + (b.total || 0),0);
+      $('#statRevenue').textContent = `R${revenue.toLocaleString()}`;
+
+      // cars table
+      const tbody = $('#carsTbody'); 
+      tbody.innerHTML='';
+      const q = $('#searchInput').value.trim().toLowerCase();
+      const filter = $('#filterStatus').value;
+      const sortBy = $('#sortBy').value;
+      let list = cars.filter(c=> (c.model.toLowerCase().includes(q) || c.reg.toLowerCase().includes(q)) );
+      if(filter!=='all') list = list.filter(c=>c.status===filter);
+      if(sortBy==='model') list.sort((a,b)=>a.model.localeCompare(b.model));
+      else if(sortBy==='price') list.sort((a,b)=>a.price - b.price);
+
+      $('#displayCount').textContent = list.length;
+      if(list.length===0){ 
+        $('#carsTable').style.display='none'; 
+        $('#emptyMessage').style.display='block'
+      } else { 
+        $('#carsTable').style.display='table'; 
+        $('#emptyMessage').style.display='none'
+      }
+
+      list.forEach(car=>{
+        const tr = document.createElement('tr');
+        const imgTd = document.createElement('td');
+        const wrap = document.createElement('div'); 
+        wrap.style.display='flex'; 
+        wrap.style.gap='12px'; 
+        wrap.style.alignItems='center'
+        const img = document.createElement('div'); 
+        img.className='car-image'; 
+        img.style.backgroundImage=`url(${car.img || ''})`;
+        const info = document.createElement('div'); 
+        info.innerHTML = `<div style="font-weight:600">${car.reg}</div><div class="small muted">${car.model}</div>`;
+        wrap.appendChild(img); 
+        wrap.appendChild(info); 
+        imgTd.appendChild(wrap);
+
+        const modelTd = document.createElement('td'); 
+        modelTd.textContent = car.model;
+        const priceTd = document.createElement('td'); 
+        priceTd.innerHTML = `R${car.price.toLocaleString()}`;
+        const statusTd = document.createElement('td'); 
+        statusTd.innerHTML = `<span class="chip ${car.status === 'available' ? 'status-available' : 'status-rented'}">${car.status}</span>`;
+        const actionsTd = document.createElement('td'); 
+        actionsTd.className='table-actions';
+
+        const manageBtn = createEl('button',{class:'ghost',onclick:()=>openEditCar(car.id)},['Manage']);
+        const bookBtn = createEl('button',{class:'btn', onclick:()=>openBookingModal(car.id)},['Book']);
+        actionsTd.appendChild(manageBtn); 
+        actionsTd.appendChild(bookBtn);
+
+        tr.appendChild(imgTd); 
+        tr.appendChild(modelTd); 
+        tr.appendChild(priceTd); 
+        tr.appendChild(statusTd); 
+        tr.appendChild(actionsTd);
+        tbody.appendChild(tr);
+      });
+
+      // bookings
+      const btbody = $('#bookingsTbody'); 
+      btbody.innerHTML='';
+      if(bookings.length===0){ 
+        $('#bookingsTable').style.display='none'; 
+        $('#emptyBookings').style.display='block' 
+      } else { 
+        $('#bookingsTable').style.display='table'; 
+        $('#emptyBookings').style.display='none' 
+      }
+      
+      bookings.forEach(b=>{
+        const tr = document.createElement('tr');
+        const car = cars.find(c=>c.id===b.carId) || {model:'(deleted)', reg:'-'};
+        tr.innerHTML = `<td>${b.id}</td><td>${car.model}<div class="small muted">${car.reg}</div></td><td>${b.customerName}<div class="small muted">${b.customerPhone}</div></td><td class="small muted">${b.from} → ${b.to}</td><td>R${b.total.toLocaleString()}</td>`;
+        const actionsTd = document.createElement('td');
+        const cancel = createEl('button',{class:'ghost', onclick:()=>cancelBooking(b.id)},['Cancel']);
+        actionsTd.appendChild(cancel);
+        tr.appendChild(actionsTd);
+        btbody.appendChild(tr);
+      });
+    }
+
+    // --- Car CRUD ---
+    function openAddCar(){
+      openModal('Add Car', buildCarForm(), (data)=>{
+        const newCar = {
+          id:uid(), 
+          model:data.model, 
+          reg:data.reg, 
+          price:parseFloat(data.price)||0, 
+          img:data.img || '', 
+          status:'available'
+        };
+        cars.push(newCar); 
+        saveData(); 
+        render(); 
+        closeModal();
+      });
+    }
+    
+    function openEditCar(carId){
+      const car = cars.find(c=>c.id===carId); 
+      if(!car) return alert('Car not found');
+      openModal('Edit Car', buildCarForm(car), (data)=>{
+        car.model = data.model; 
+        car.reg = data.reg; 
+        car.price = parseFloat(data.price)||0; 
+        car.img = data.img || '';
+        saveData(); 
+        render(); 
+        closeModal();
+      }, [createEl('button',{class:'ghost', onclick:()=>{ 
+        if(confirm('Delete this car?')){ 
+          cars = cars.filter(c=>c.id!==car.id);
+          bookings = bookings.filter(b=>b.carId!==car.id); 
+          saveData(); 
+          render(); 
+          closeModal(); 
+        } 
+      }},['Delete'])]);
+    }
+
+    // --- Bookings ---
+    function openBookingModal(carId=null){
+      openModal(carId ? 'New Booking' : 'Create Booking', buildBookingForm(carId), (data)=>{
+        const from = new Date(data.from); 
+        const to = new Date(data.to);
+        if(isNaN(from)||isNaN(to)||to<from){ 
+          alert('Invalid dates'); 
+          return; 
+        }
+        const days = Math.ceil((to - from)/(1000*60*60*24)) + 1;
+        const car = cars.find(c=>c.id===data.carId);
+        if(!car){ 
+          alert('Car not found'); 
+          return; 
+        }
+        const conflict = bookings.find(b => b.carId===car.id && !(new Date(b.to) < from || new Date(b.from) > to));
+        if(conflict){ 
+          alert('This car is already booked for the selected dates.'); 
+          return; 
+        }
+        const total = days * car.price;
+        const booking = { 
+          id: uid(), 
+          carId: car.id, 
+          customerName: data.customerName, 
+          customerPhone: data.customerPhone, 
+          from: data.from, 
+          to: data.to, 
+          days, 
+          total 
+        };
+        bookings.push(booking);
+        car.status = 'rented';
+        saveData(); 
+        render(); 
+        closeModal();
+      });
+    }
+
+    function cancelBooking(bookingId){ 
+      if(!confirm('Cancel booking?')) return; 
+      bookings = bookings.filter(b=>b.id!==bookingId);
+      const usedCarIds = new Set(bookings.map(b=>b.carId)); 
+      cars.forEach(c=>{ 
+        if(!usedCarIds.has(c.id)) c.status='available' 
+      }); 
+      saveData(); 
+      render(); 
+    }
+
+    // --- Modal builder ---
+    function openModal(title, contentNode, onSave, extraButtons=[]){
+      const root = $('#modalRoot'); 
+      root.innerHTML = '';
+      const backdrop = createEl('div',{class:'modal-backdrop'});
+      const modal = createEl('div',{class:'modal'});
+      modal.appendChild(createEl('h3',{},[title]));
+      modal.appendChild(createEl('div',{},[contentNode]));
+      const actions = createEl('div',{class:'actions'});
+      extraButtons.forEach(b=>actions.appendChild(b));
+      actions.appendChild(createEl('button',{class:'ghost', onclick:()=>{ closeModal(); }},['Close']));
+      actions.appendChild(createEl('button',{class:'btn', onclick:()=>{ const data = collectFormData(modal); onSave(data); }},['Save']));
+      modal.appendChild(actions);
+      backdrop.appendChild(modal); 
+      root.appendChild(backdrop);
+    }
+    
+    function closeModal(){ 
+      $('#modalRoot').innerHTML=''; 
+    }
+
+    function collectFormData(modal){
+      const inputs = modal.querySelectorAll('input,select,textarea'); 
+      let data = {};
+      inputs.forEach(i=>{ 
+        if(i.type==='checkbox') data[i.name]=i.checked; 
+        else data[i.name]=i.value; 
+      });
+      return data;
+    }
+
+    function buildCarForm(car=null){
+      const wrap = createEl('div',{});
+      wrap.appendChild(createEl('label',{},['Model'])); 
+      wrap.appendChild(createEl('input',{name:'model', value:car?car.model:'', placeholder:'e.g. Toyota Corolla'}));
+      wrap.appendChild(createEl('label',{},['Registration'])); 
+      wrap.appendChild(createEl('input',{name:'reg', value:car?car.reg:'', placeholder:'e.g. KRG123GP'}));
+      wrap.appendChild(createEl('label',{},['Daily Rate (ZAR)'])); 
+      wrap.appendChild(createEl('input',{name:'price', value:car?car.price:'', placeholder:'e.g. 450'}));
+      wrap.appendChild(createEl('label',{},['Image URL'])); 
+      wrap.appendChild(createEl('input',{name:'img', value:car?car.img:'', placeholder:'https://...'}));
+      return wrap;
+    }
+
+    function buildBookingForm(selectedCarId=null){
+      const wrap = createEl('div',{});
+      wrap.appendChild(createEl('label',{},['Choose Car']));
+      const sel = createEl('select',{name:'carId'});
+      cars.forEach(c=>sel.appendChild(createEl('option',{value:c.id},[`${c.model} — ${c.reg} (R${c.price}/day)`])));
+      if(selectedCarId) sel.value = selectedCarId;
+      wrap.appendChild(sel);
+      wrap.appendChild(createEl('label',{},['Customer name'])); 
+      wrap.appendChild(createEl('input',{name:'customerName', placeholder:'Full name'}));
+      wrap.appendChild(createEl('label',{},['Customer phone'])); 
+      wrap.appendChild(createEl('input',{name:'customerPhone', placeholder:'+27...'}));
+      wrap.appendChild(createEl('label',{},['From (YYYY-MM-DD)'])); 
+      wrap.appendChild(createEl('input',{name:'from', placeholder:'2025-11-01'}));
+      wrap.appendChild(createEl('label',{},['To (YYYY-MM-DD)'])); 
+      wrap.appendChild(createEl('input',{name:'to', placeholder:'2025-11-03'}));
+      wrap.appendChild(createEl('div',{},[createEl('div',{class:'small muted'},['Note: Prices are per day. Booking duration is inclusive of both dates.'])]));
+      return wrap;
+    }
+
+    // --- events ---
+    document.getElementById('addCarBtn').addEventListener('click', openAddCar);
+    document.getElementById('newBookingBtn').addEventListener('click', ()=>openBookingModal());
+    $('#searchInput').addEventListener('input', render);
+    $('#filterStatus').addEventListener('change', render);
+    $('#sortBy').addEventListener('change', render);
+
+    // --- boot ---
+    loadData(); 
+    render();
+
+    // Expose some helpers to window for debugging / quick reset
+    window.Siwelele = { 
+      cars, 
+      bookings, 
+      reset: ()=>{ 
+        localStorage.removeItem(KEY_CARS); 
+        localStorage.removeItem(KEY_BOOKINGS); 
+        location.reload(); 
+      } 
+    };
+
+  </script>
+</body>
+</html>
